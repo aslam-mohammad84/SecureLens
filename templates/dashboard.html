@@ -1,15 +1,385 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SecureLens — Exposure Intelligence</title><script src="https://cdn.tailwindcss.com"></script><style>
-:root{--bg:#070612;--ink:#f8f7ff;--muted:#aaa6c0;--glass:rgba(255,255,255,.075);--line:rgba(255,255,255,.13);--violet:#a78bfa;--pink:#f472b6;--lime:#bef264;--orange:#fb923c;--cyan:#67e8f9}*{scroll-behavior:smooth}body{margin:0;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui;background:radial-gradient(circle at 8% 0%,#3b0764 0,transparent 27%),radial-gradient(circle at 92% 8%,#7c2d12 0,transparent 25%),radial-gradient(circle at 50% 100%,#164e63 0,transparent 30%),#070612}.noise{position:fixed;inset:0;pointer-events:none;opacity:.04;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E")}.glass{background:linear-gradient(135deg,rgba(255,255,255,.105),rgba(255,255,255,.035));border:1px solid var(--line);box-shadow:0 25px 90px rgba(0,0,0,.3),inset 0 1px rgba(255,255,255,.1);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px)}.soft{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08)}.muted{color:var(--muted)}.accent{color:var(--violet)}.metric{background:linear-gradient(145deg,rgba(167,139,250,.13),rgba(244,114,182,.045));border:1px solid rgba(167,139,250,.18)}.input{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);color:white}.btn{background:linear-gradient(100deg,var(--lime),#86efac,var(--cyan));color:#10120b}.nav{color:#c8c3dc}.nav:hover{color:white}.score{background:conic-gradient(var(--lime) calc(var(--score)*1%),rgba(255,255,255,.08) 0);border-radius:50%;padding:8px}.score>div{background:#0c0918;border-radius:50%;width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column}.finding{border-left:3px solid var(--violet)}.sev-critical{color:#fecdd3;background:#9f123930}.sev-high{color:#fed7aa;background:#9a341230}.sev-medium{color:#fde68a;background:#854d0e30}.sev-low{color:#bae6fd;background:#07598530}.sev-info{color:#ddd6fe;background:#5b21b630}.details{display:none}.open .details{display:block}.tech{background:linear-gradient(120deg,#312e81aa,#83184377);border:1px solid #c4b5fd35}.bar{height:8px;background:#ffffff12;border-radius:20px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--violet),var(--pink),var(--orange));border-radius:20px}
-</style></head><body><div class="noise"></div><nav class="sticky top-0 z-30 glass border-x-0 border-t-0"><div class="max-w-[1600px] mx-auto px-5 lg:px-9 h-20 flex items-center justify-between"><a href="#top" class="flex items-center gap-3"><div class="w-11 h-11 rounded-2xl grid place-items-center font-black bg-gradient-to-br from-violet-300 via-pink-300 to-orange-300 text-slate-950">SL</div><div><b>SecureLens</b><div class="text-[10px] tracking-[.25em] uppercase muted">Exposure intelligence</div></div></a><div class="hidden md:flex gap-7 text-xs font-bold"><a class="nav" href="#overview">Overview</a><a class="nav" href="#map">Attack surface</a><a class="nav" href="#analysis">Analysis</a><a class="nav" href="#fingerprint">Fingerprint</a></div><div class="px-3 py-2 rounded-full soft text-[10px] font-black uppercase tracking-widest text-lime-300">Authorized mode</div></div></nav>
-<main id="top" class="relative max-w-[1600px] mx-auto px-5 lg:px-9 py-9">
-<section id="overview" class="grid xl:grid-cols-[1.35fr_.65fr] gap-6 mb-7"><div class="glass rounded-[32px] p-8 lg:p-11"><div class="inline-flex px-3 py-1.5 rounded-full soft text-[10px] uppercase tracking-[.2em] font-black accent">Website security • reconnaissance • evidence</div><h1 class="text-4xl lg:text-7xl font-black tracking-[-.055em] leading-[.92] mt-6">Understand your<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-300 via-pink-300 to-orange-300">public attack surface.</span></h1><p class="text-base lg:text-lg muted max-w-3xl leading-7 mt-6">SecureLens discovers public pages, checks transport and browser controls, identifies technology signals, examines DNS/email posture, and turns the collected evidence into prioritized findings.</p><div class="grid md:grid-cols-3 gap-3 mt-8"><div class="soft rounded-2xl p-5"><b class="text-lime-300">01 · DISCOVER</b><p class="text-sm muted mt-2">Maps robots.txt, sitemaps, same-origin links and reachable URLs.</p></div><div class="soft rounded-2xl p-5"><b class="text-pink-300">02 · ANALYZE</b><p class="text-sm muted mt-2">Evaluates TLS, headers, cookies, CORS, DNS, email and exposure.</p></div><div class="soft rounded-2xl p-5"><b class="text-orange-300">03 · EXPLAIN</b><p class="text-sm muted mt-2">Shows evidence, impact and remediation instead of only a score.</p></div></div></div>
-<div class="glass rounded-[32px] p-7 flex flex-col justify-between"><div><div class="text-[10px] uppercase tracking-[.2em] font-black text-pink-300">Launch audit</div><h2 class="text-3xl font-black mt-2">Scan a website</h2><p class="muted text-sm leading-6 mt-2">Use only against systems you own or are explicitly authorized to assess.</p></div><form action="/scan" method="post" id="scan" class="mt-7"><input name="target_url" type="url" required value="{{ target or '' }}" placeholder="https://example.com" class="input w-full rounded-2xl px-4 py-4 outline-none"><label class="flex items-center gap-3 mt-4 text-xs font-bold"><input type="checkbox" name="active_checks" value="true" checked class="accent-lime-300"> <span>Auto-enable authorized active checks</span></label><button id="run" class="btn w-full rounded-2xl mt-4 py-4 font-black">Run complete security analysis</button></form><div class="text-[11px] muted mt-4">Active checks test OPTIONS, TRACE and known sensitive paths without destructive requests.</div></div></section>
-{% if results and results.error %}<div class="glass rounded-3xl p-6 mb-7 border border-red-400/30"><b class="text-red-300">Audit failed</b><p class="muted mt-2">{{ results.error }}</p></div>{% endif %}
-{% if results and results.audit and results.audit.status=='completed' %}
-<section class="grid xl:grid-cols-[300px_1fr] gap-6 mb-7"><div class="glass rounded-[30px] p-7"><div class="text-[10px] uppercase tracking-[.2em] muted font-black">Posture snapshot</div><div class="score w-44 h-44 mx-auto mt-5" style="--score:{{ results.security_score.score }}"><div><span class="text-5xl font-black">{{ results.security_score.score }}</span><small class="accent font-black">GRADE {{ results.security_score.grade }}</small></div></div><h2 class="text-center font-black text-xl mt-5">{{ results.security_score.label }}</h2><p class="text-center text-xs muted mt-2">{{ results.target.url }}</p></div><div class="grid grid-cols-2 lg:grid-cols-5 gap-3">{% for label,key,cls in [('Critical','critical','text-red-300'),('High','high','text-orange-300'),('Medium','medium','text-amber-300'),('Low','low','text-cyan-300'),('Info','info','text-violet-300')] %}<div class="metric rounded-3xl p-5"><div class="text-xs muted">{{ label }}</div><div class="text-4xl font-black {{ cls }} mt-3">{{ results.summary[key] }}</div><div class="text-[10px] uppercase muted font-bold mt-2">findings</div></div>{% endfor %}</div></section>
-<section id="map" class="glass rounded-[30px] overflow-hidden mb-7"><div class="p-7 lg:p-8 border-b border-white/10"><div class="text-[10px] uppercase tracking-[.2em] text-violet-300 font-black">01 · Attack surface</div><h2 class="text-3xl font-black mt-2">Website map & exposure inventory</h2><p class="muted mt-2">The same analyzed dataset is preserved here: sitemap discovery, crawl results, robots policy and HTTP accessibility.</p><div class="grid grid-cols-2 md:grid-cols-6 gap-3 mt-6">{% for label,key in [('URLs','unique_urls'),('Allowed','allowed'),('Disallowed','disallowed'),('Crawled','crawled'),('Sitemap','sitemap_urls'),('HTML links','html_discovered')] %}<div class="soft rounded-2xl p-4"><b class="text-2xl">{{ results.website_recon.counts[key] }}</b><div class="text-[10px] uppercase muted font-black mt-1">{{ label }}</div></div>{% endfor %}</div></div><div class="p-7"><div class="flex justify-between gap-4 items-center"><div><h3 class="font-black text-xl">URL inventory</h3><p class="text-xs muted mt-1">Filter without changing the analysis.</p></div><input id="filter" placeholder="Search paths or URLs…" class="input rounded-xl px-4 py-2 outline-none"></div><div class="mt-4 rounded-2xl border border-white/10 overflow-hidden"><div class="max-h-[620px] overflow-auto divide-y divide-white/10">{% for x in results.website_recon.url_inventory %}<div class="urlrow p-4 hover:bg-white/[.035]" data-url="{{ x.url|lower }}"><div class="flex flex-col lg:flex-row lg:items-center gap-3"><div class="flex-1 min-w-0"><div class="font-mono text-sm break-all">{{ x.path }}{% if x.query %}?{{ x.query }}{% endif %}</div><div class="text-[10px] muted break-all mt-1">{{ x.url }}</div></div><span class="text-[10px] uppercase font-black px-2 py-1 rounded-lg {{ 'sev-info' if x.robots=='allowed' else 'sev-medium' }}">robots: {{ x.robots }}</span><span class="text-xs font-black">HTTP {{ x.http_status or '—' }}</span><span class="text-[10px] uppercase font-black {{ 'text-lime-300' if x.accessibility=='publicly_accessible' else 'muted' }}">{{ 'reachable' if x.accessibility=='publicly_accessible' else 'not crawled' if x.accessibility=='not_crawled' else 'non-success' }}</span></div></div>{% else %}<div class="p-6 muted">No URLs discovered.</div>{% endfor %}</div></div></div></section>
-<section id="analysis" class="grid xl:grid-cols-[1fr_1fr] gap-6 mb-7"><div class="glass rounded-[30px] p-7"><div class="text-[10px] uppercase tracking-[.2em] text-cyan-300 font-black">02 · Transport & controls</div><h2 class="text-2xl font-black mt-2">HTTP / TLS posture</h2><div class="grid grid-cols-2 gap-3 mt-5">{% for label,val in [('HTTP status',results.http.status_code),('Response',results.http.response_time_ms|string+' ms'),('HTTP version',results.http.http_version),('TLS',results.ssl_tls.status),('TLS protocol',results.ssl_tls.protocol)] %}<div class="soft rounded-2xl p-4"><div class="text-xs muted">{{ label }}</div><div class="font-black mt-2 break-all">{{ val or '—' }}</div></div>{% endfor %}</div><h3 class="font-black mt-7">Security headers</h3><div class="space-y-2 mt-3">{% for k,h in results.security_headers|items if k!='csp' %}<div class="soft rounded-xl p-3 flex justify-between"><span class="text-sm font-bold">{{ h.name }}</span><span class="text-xs font-black {{ 'text-lime-300' if h.present else 'text-red-300' }}">{{ 'PRESENT' if h.present else 'MISSING' }}</span></div>{% endfor %}</div></div>
-<div class="glass rounded-[30px] p-7"><div class="text-[10px] uppercase tracking-[.2em] text-pink-300 font-black">03 · Findings</div><h2 class="text-2xl font-black mt-2">Evidence-driven analysis</h2><p class="text-sm muted mt-2">Every finding retains its description, evidence, impact and remediation.</p><div class="space-y-2 mt-5">{% for f in results.findings %}<div class="finding soft rounded-2xl overflow-hidden"><button type="button" class="w-full p-4 text-left flex gap-3 items-center" onclick="this.parentElement.classList.toggle('open')"><span class="sev-{{ f.severity }} px-2 py-1 rounded-lg border border-white/10 text-[10px] uppercase font-black">{{ f.severity }}</span><span class="flex-1 font-bold text-sm">{{ f.title }}<small class="block muted font-normal mt-1">{{ f.category }}{% if f.active_check %} · active check{% endif %}</small></span><span class="muted">⌄</span></button><div class="details px-4 pb-4"><div class="grid lg:grid-cols-2 gap-3 text-sm"><div class="soft rounded-xl p-4"><b>Description</b><p class="muted mt-1">{{ f.description }}</p></div><div class="soft rounded-xl p-4"><b>Impact</b><p class="muted mt-1">{{ f.impact }}</p></div><div class="soft rounded-xl p-4"><b>Evidence</b><pre class="text-xs muted whitespace-pre-wrap break-all mt-2">{{ f.evidence }}</pre></div><div class="soft rounded-xl p-4"><b>Remediation</b><p class="muted mt-1">{{ f.remediation }}</p></div></div></div></div>{% else %}<div class="muted p-5 soft rounded-xl">No findings.</div>{% endfor %}</div></div></section>
-<section id="fingerprint" class="grid xl:grid-cols-[1.25fr_.75fr] gap-6 mb-7"><div class="glass rounded-[30px] p-7"><div class="text-[10px] uppercase tracking-[.2em] text-orange-300 font-black">04 · Fingerprinting</div><div class="flex items-end justify-between gap-4"><div><h2 class="text-2xl font-black mt-2">Technology intelligence</h2><p class="muted text-sm mt-2">Fingerprinting now combines HTML, asset URLs, response headers, cookies and generator metadata.</p></div><span class="text-3xl font-black text-lime-300">{{ results.technology.detected|length }}</span></div><div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-6">{% for t in results.technology.detected %}<div class="tech rounded-2xl p-4"><div class="font-black">{{ t.name }}</div><div class="flex justify-between mt-2"><span class="text-[10px] uppercase muted">{{ t.source }}</span><span class="text-[10px] uppercase font-black {{ 'text-lime-300' if t.confidence=='high' else 'text-amber-300' }}">{{ t.confidence }}</span></div><div class="text-[10px] muted mt-2 break-all">{{ t.evidence|join(' · ') }}</div></div>{% else %}<div class="sm:col-span-2 lg:col-span-3 soft rounded-2xl p-6"><b>No technology signature matched.</b><p class="muted text-sm mt-2">The analyzer scanned HTML, assets, headers and cookies. This can happen with custom or heavily bundled applications.</p></div>{% endfor %}</div></div><div class="glass rounded-[30px] p-7"><div class="text-[10px] uppercase tracking-[.2em] text-cyan-300 font-black">05 · Infrastructure</div><h2 class="text-2xl font-black mt-2">DNS & email</h2>{% for typ,r in results.dns_email.records|items %}<div class="soft rounded-xl p-3 mt-3"><div class="text-[10px] uppercase muted font-black">{{ typ }}</div><div class="font-mono text-xs break-all mt-1">{{ r['values']|default([],true)|join(', ') or 'No values' }}</div></div>{% endfor %}</div></section>
-<section class="glass rounded-[30px] p-7 mb-7"><div class="text-[10px] uppercase tracking-[.2em] text-lime-300 font-black">06 · Remediation</div><h2 class="text-2xl font-black mt-2">What to address next</h2><div class="grid lg:grid-cols-2 gap-3 mt-5">{% for r in results.recommendations %}<div class="soft rounded-2xl p-5"><div class="flex justify-between gap-3"><b>{{ r.title }}</b><span class="text-[10px] uppercase font-black text-orange-300">{{ r.priority }}</span></div><p class="text-sm muted mt-2">{{ r.reason }}</p><p class="text-sm mt-3 text-violet-200">{{ r.action }}</p></div>{% else %}<div class="muted">No recommendations.</div>{% endfor %}</div></section>
-{% endif %}<footer class="py-10 text-center text-xs muted">SecureLens · authorized website security analysis · passive discovery + non-destructive active checks</footer></main><script>const f=document.getElementById('scan'),b=document.getElementById('run');if(f)f.addEventListener('submit',()=>{b.disabled=true;b.textContent='Analyzing attack surface…'});const q=document.getElementById('filter');if(q)q.addEventListener('input',()=>{const s=q.value.toLowerCase();document.querySelectorAll('.urlrow').forEach(x=>x.style.display=!s||x.dataset.url.includes(s)?'':'none')});</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SecureLens: website exposure report</title>
+<style>
+:root{
+  --paper:#eef1ef;--surface:#fbfcfb;--ink:#18231f;--muted:#56655f;--line:#cfd8d3;--accent:#0d6b5f;
+  --rail:#12312c;--rail-ink:#dbe8e3;--rail-line:#2c4d46;
+  --crit:#b3261e;--high:#b85a00;--med:#8a6d00;--low:#1565a0;--info:#5d6b66;--ok:#1b7a4a;
+  --sans:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{--paper:#0e1512;--surface:#151e1a;--ink:#e5eee9;--muted:#9fb0a8;--line:#29372f;--accent:#4fbfae;--rail:#0a1f1b;
+  --crit:#ff8f86;--high:#ffab6b;--med:#e6bd52;--low:#69b6f2;--info:#a9b6b0;--ok:#57c98b}
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 var(--sans)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.shell{display:grid;grid-template-columns:300px minmax(0,1fr);min-height:100vh}
+
+/* side rail */
+.rail{background:var(--rail);color:var(--rail-ink);padding:1.5rem 1.25rem;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{display:block;font:700 1.35rem var(--serif);color:#fff;text-decoration:none;letter-spacing:-.01em}
+.rail .sub{margin:.2rem 0 1.5rem;font-size:.9rem;color:#9db8b0}
+.rail label.lbl{display:block;font-size:.88rem;font-weight:600;margin-bottom:.35rem}
+.rail .field{width:100%;padding:.65rem .7rem;border:1px solid var(--rail-line);border-radius:3px;background:#0b211d;color:#fff;font:inherit}
+.rail .field::placeholder{color:#6f8f86}
+.rail .check{display:flex;gap:.55rem;margin-top:.9rem;font-size:.85rem;line-height:1.45;color:#c4d6d0}
+.rail .check input{margin-top:.2rem;flex:none;width:1rem;height:1rem;accent-color:#9fe0d2}
+.btn{width:100%;margin-top:1rem;padding:.7rem 1rem;border:0;border-radius:3px;background:#f2f6f4;color:#12312c;font:inherit;font-weight:700;cursor:pointer}
+.btn:hover{background:#fff}
+.btn:disabled{opacity:.6;cursor:progress}
+.rail .note{font-size:.82rem;color:#9db8b0;margin:.9rem 0 0}
+.rail :focus-visible{outline-color:#fff}
+.toc{margin-top:1.75rem;border-top:1px solid var(--rail-line);padding-top:1rem}
+.toc b{display:block;font-size:.85rem;color:#9db8b0;font-weight:600;margin-bottom:.4rem}
+.toc a{display:block;padding:.35rem 0;color:var(--rail-ink);text-decoration:none;font-size:.95rem}
+.toc a:hover{text-decoration:underline}
+
+/* main */
+.main{padding:2.5rem clamp(1rem,4vw,3.5rem) 2rem;max-width:1100px;width:100%}
+h1{font:700 clamp(1.7rem,3.4vw,2.5rem)/1.15 var(--serif);letter-spacing:-.015em;margin:0 0 1rem;max-width:24ch}
+h1.target{max-width:none;word-break:break-all;font-size:clamp(1.3rem,2.6vw,1.9rem)}
+h2{font:700 1.5rem/1.2 var(--serif);margin:0 0 .35rem;letter-spacing:-.01em}
+h3{font-size:1.02rem;margin:0 0 .5rem}
+.lead{color:var(--muted);max-width:62ch;margin:0 0 1.5rem}
+.sec{margin-top:3rem;scroll-margin-top:1rem}
+.sec>.lead{margin-bottom:1.1rem}
+.err{background:var(--surface);border:1px solid var(--crit);border-left-width:5px;padding:1rem 1.2rem;margin-bottom:1.5rem}
+.err b{color:var(--crit)}
+.err p{margin:.3rem 0 0;color:var(--muted)}
+
+/* empty state coverage list */
+.cover{margin:0;max-width:760px;border-top:1px solid var(--line)}
+.cover div{display:grid;grid-template-columns:11rem minmax(0,1fr);gap:1rem;padding:.8rem 0;border-bottom:1px solid var(--line)}
+.cover dt{font-weight:700}
+.cover dd{margin:0;color:var(--muted)}
+
+/* report head */
+.head{display:grid;grid-template-columns:minmax(0,15rem) minmax(0,1fr);gap:2rem;align-items:start;margin-top:1.25rem}
+.score{font:700 4rem/1 var(--serif);letter-spacing:-.03em}
+.score small{font:500 1rem var(--sans);color:var(--muted);letter-spacing:0}
+.grade{margin-top:.5rem;font-weight:600}
+.dist{display:flex;height:.9rem;background:var(--line);border-radius:2px;overflow:hidden}
+.dist i{display:block;height:100%}
+.legend{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.6rem;margin:1rem 0 0;padding:0;list-style:none}
+.legend li{border-top:4px solid var(--info);padding-top:.4rem}
+.legend b{display:block;font:700 1.7rem/1.1 var(--serif)}
+.legend span{font-size:.88rem;color:var(--muted)}
+.k-critical{background:var(--crit);border-color:var(--crit)}.k-high{background:var(--high);border-color:var(--high)}
+.k-medium{background:var(--med);border-color:var(--med)}.k-low{background:var(--low);border-color:var(--low)}.k-info{background:var(--info);border-color:var(--info)}
+.legend li.k-critical,.legend li.k-high,.legend li.k-medium,.legend li.k-low,.legend li.k-info{background:none}
+.distnote{font-size:.88rem;color:var(--muted);margin:.5rem 0 0}
+
+/* severity label: square marker, not a pill */
+.sev{display:inline-flex;align-items:center;gap:.4rem;font-size:.88rem;font-weight:700;white-space:nowrap}
+.sev::before{content:"";width:.65rem;height:.65rem;background:currentColor}
+.t-critical{color:var(--crit)}.t-high{color:var(--high)}.t-medium{color:var(--med)}.t-low{color:var(--low)}.t-info{color:var(--info)}
+
+/* findings */
+details.f{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--info);margin-bottom:.6rem}
+details.f.b-critical{border-left-color:var(--crit)}details.f.b-high{border-left-color:var(--high)}
+details.f.b-medium{border-left-color:var(--med)}details.f.b-low{border-left-color:var(--low)}
+details.f summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:6.5rem minmax(0,1fr) 1rem;gap:.8rem;align-items:start;padding:.85rem 1rem}
+details.f summary::-webkit-details-marker{display:none}
+details.f summary::after{content:"";width:.5rem;height:.5rem;margin-top:.45rem;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg)}
+details.f[open] summary::after{transform:rotate(-135deg)}
+.ft{font-weight:600}
+.ft small{display:block;font-weight:400;color:var(--muted)}
+.fb{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem 1.5rem;padding:.25rem 1rem 1.1rem 8.3rem}
+.fb div{min-width:0}
+.fb h4{margin:0 0 .2rem;font-size:.92rem}
+.fb p{margin:0;color:var(--muted);font-size:.94rem}
+.fb pre{margin:0;padding:.6rem .7rem;background:var(--paper);font:.8rem/1.5 var(--mono);white-space:pre-wrap;word-break:break-all;color:var(--muted)}
+.fb .wide{grid-column:1/-1}
+
+/* tables */
+.tw{background:var(--surface);border:1px solid var(--line)}
+.scroll{max-height:560px;overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:.94rem}
+th{position:sticky;top:0;background:var(--surface);text-align:left;font-size:.85rem;color:var(--muted);font-weight:600;padding:.6rem .9rem;border-bottom:2px solid var(--line)}
+td{padding:.65rem .9rem;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td code,.mono{font:.85rem var(--mono);word-break:break-all}
+td small{display:block;color:var(--muted);font-size:.78rem;word-break:break-all}
+.yes{color:var(--ok);font-weight:600}.no{color:var(--crit);font-weight:600}
+.tools{display:flex;gap:1rem;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:.8rem}
+.tools .field{width:min(340px,100%);padding:.6rem .7rem;border:1px solid var(--line);border-radius:3px;background:var(--surface);color:var(--ink);font:inherit}
+.tools label{display:block;font-size:.88rem;font-weight:600;margin-bottom:.3rem}
+.counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.6rem;margin:0 0 1.1rem}
+.counts div{background:var(--surface);border:1px solid var(--line);padding:.6rem .8rem}
+.counts b{display:block;font:700 1.5rem/1.2 var(--serif)}
+.counts span{font-size:.85rem;color:var(--muted)}
+.shown{font-size:.88rem;color:var(--muted)}
+
+/* two-up and lists */
+.pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem}
+dl.kv{margin:0;background:var(--surface);border:1px solid var(--line)}
+dl.kv div{display:flex;justify-content:space-between;gap:1rem;padding:.6rem .9rem;border-bottom:1px solid var(--line)}
+dl.kv div:last-child{border-bottom:0}
+dl.kv dt{color:var(--muted)}
+dl.kv dd{margin:0;font-weight:600;text-align:right;word-break:break-word}
+.recs{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.rec{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--accent);padding:1rem}
+.rec b{display:block}
+.rec .pr{font-size:.85rem;color:var(--muted)}
+.rec p{margin:.5rem 0 0;font-size:.94rem;color:var(--muted)}
+.rec p.act{color:var(--ink)}
+.empty{padding:1rem;color:var(--muted);background:var(--surface);border:1px solid var(--line)}
+footer{margin-top:3.5rem;padding-top:1.25rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+
+@media (max-width:1000px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .rail{position:static;height:auto;padding:1.1rem 1rem}
+  .toc{display:flex;flex-wrap:wrap;gap:.2rem 1.2rem;align-items:baseline}
+  .toc b{width:100%}
+  .head,.pair{grid-template-columns:minmax(0,1fr)}
+  .main{padding-top:1.75rem}
+}
+@media (max-width:700px){
+  .legend{grid-template-columns:repeat(auto-fit,minmax(90px,1fr))}
+  .cover div{grid-template-columns:minmax(0,1fr);gap:.1rem}
+  details.f summary{grid-template-columns:minmax(0,1fr) 1rem}
+  details.f summary .sev{grid-column:1/-1}
+  .fb{grid-template-columns:minmax(0,1fr);padding:.25rem 1rem 1rem}
+  .rt thead{display:none}
+  .rt tr{display:block;padding:.6rem .9rem;border-bottom:1px solid var(--line)}
+  .rt tr:last-child{border-bottom:0}
+  .rt td{display:flex;justify-content:space-between;gap:1rem;padding:.15rem 0;border:0}
+  .rt td[data-l]::before{content:attr(data-l);color:var(--muted);font-size:.85rem;flex:none}
+  .rt td.full{display:block}
+  .recs{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<aside class="rail">
+  <a class="brand" href="#top">SecureLens</a>
+  <p class="sub">Website exposure scanner</p>
+  <form action="/scan" method="post" id="scanForm">
+    <label class="lbl" for="target_url">Website address</label>
+    <input class="field" id="target_url" name="target_url" type="url" required value="{{ target or '' }}" placeholder="https://example.com" autocomplete="url">
+    <label class="check"><input type="checkbox" name="active_checks" value="true" checked><span>Run active checks: OPTIONS and TRACE requests, plus a fixed list of sensitive paths. Nothing is changed on the site.</span></label>
+    <button class="btn" id="run" type="submit">Start scan</button>
+  </form>
+  <p class="note">Scan only sites you own or have written permission to test.</p>
+  {% if results and results.audit and results.audit.status=='completed' %}
+  <nav class="toc" aria-label="Report sections">
+    <b>In this report</b>
+    <a href="#summary">Summary</a>
+    <a href="#findings">Findings</a>
+    <a href="#connection">Connection and headers</a>
+    <a href="#urls">URL inventory</a>
+    <a href="#tech">Technology</a>
+    <a href="#dns">DNS and email</a>
+    <a href="#fixes">Fixes</a>
+  </nav>
+  {% endif %}
+</aside>
+
+<main class="main" id="top">
+
+{% if results and results.error %}
+<div class="err" role="alert"><b>The scan failed.</b><p>{{ results.error }}</p></div>
+{% endif %}
+
+{% if not (results and results.audit and results.audit.status=='completed') %}
+<h1>See what your website exposes to anyone on the internet</h1>
+<p class="lead">Enter an address in the panel and SecureLens will look at the site the way an outside visitor can. You get a list of problems, the evidence behind each one, and what to change.</p>
+<h2 style="font-size:1.15rem;margin-bottom:.6rem">What a scan covers</h2>
+<dl class="cover">
+  <div><dt>Pages</dt><dd>robots.txt, sitemaps and links between pages on the same site.</dd></div>
+  <div><dt>Connection</dt><dd>HTTP version, response time, TLS protocol and certificate status.</dd></div>
+  <div><dt>Browser rules</dt><dd>Security headers, cookie flags and CORS settings.</dd></div>
+  <div><dt>Domain</dt><dd>DNS records and email protection records.</dd></div>
+  <div><dt>Exposure</dt><dd>Technology in use, and paths that should not be public.</dd></div>
+</dl>
+{% else %}
+
+{# ---------- summary ---------- #}
+{% set s = results.summary %}
+{% set total = s.critical + s.high + s.medium + s.low + s.info %}
+<section id="summary">
+  <p class="lead" style="margin-bottom:.3rem">Report for</p>
+  <h1 class="target">{{ results.target.url }}</h1>
+  <div class="head">
+    <div>
+      <div class="score">{{ results.security_score.score }}<small> / 100</small></div>
+      <div class="grade">Grade {{ results.security_score.grade }}, {{ results.security_score.label }}</div>
+    </div>
+    <div>
+      {% if total > 0 %}
+      <div class="dist" role="img" aria-label="Findings by severity">
+        {% for key in ['critical','high','medium','low','info'] %}{% if s[key] %}<i class="k-{{ key }}" style="width:{{ (s[key]*100/total)|round(2) }}%"></i>{% endif %}{% endfor %}
+      </div>
+      <p class="distnote">{{ total }} findings in total, shown by share of each severity.</p>
+      {% else %}
+      <div class="dist" aria-hidden="true"></div>
+      <p class="distnote">No findings were reported.</p>
+      {% endif %}
+      <ul class="legend">
+        {% for label,key in [('Critical','critical'),('High','high'),('Medium','medium'),('Low','low'),('Info','info')] %}
+        <li class="k-{{ key }}"><b>{{ s[key] }}</b><span>{{ label }}</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>
+
+{# ---------- findings ---------- #}
+<section class="sec" id="findings">
+  <h2>Findings</h2>
+  <p class="lead">Open a finding to see what was found, why it matters, the raw evidence and how to fix it.</p>
+  {% for f in results.findings %}
+  <details class="f b-{{ f.severity }}">
+    <summary>
+      <span class="sev t-{{ f.severity }}">{{ f.severity|capitalize }}</span>
+      <span class="ft">{{ f.title }}<small>{{ f.category }}{% if f.active_check %}, found by an active check{% endif %}</small></span>
+    </summary>
+    <div class="fb">
+      <div><h4>What was found</h4><p>{{ f.description }}</p></div>
+      <div><h4>Why it matters</h4><p>{{ f.impact }}</p></div>
+      <div class="wide"><h4>Evidence</h4><pre>{{ f.evidence }}</pre></div>
+      <div class="wide"><h4>How to fix it</h4><p style="color:var(--ink)">{{ f.remediation }}</p></div>
+    </div>
+  </details>
+  {% else %}
+  <div class="empty">No findings were reported.</div>
+  {% endfor %}
+</section>
+
+{# ---------- connection and headers ---------- #}
+<section class="sec" id="connection">
+  <h2>Connection and headers</h2>
+  <p class="lead">How the server answered the first request, and which browser protection headers it sent.</p>
+  <div class="pair">
+    <dl class="kv">
+      {% for label,val in [('HTTP status',results.http.status_code),('Response time',results.http.response_time_ms|string+' ms'),('HTTP version',results.http.http_version),('TLS status',results.ssl_tls.status),('TLS protocol',results.ssl_tls.protocol)] %}
+      <div><dt>{{ label }}</dt><dd>{{ val or 'n/a' }}</dd></div>
+      {% endfor %}
+    </dl>
+    <dl class="kv">
+      {% for k,h in results.security_headers|items if k!='csp' %}
+      <div><dt>{{ h.name }}</dt><dd class="{{ 'yes' if h.present else 'no' }}">{{ 'Present' if h.present else 'Missing' }}</dd></div>
+      {% endfor %}
+    </dl>
+  </div>
+</section>
+
+{# ---------- url inventory ---------- #}
+<section class="sec" id="urls">
+  <h2>URL inventory</h2>
+  <p class="lead">Addresses found through sitemaps, robots.txt and page links, with the robots.txt rule and the response each one gave.</p>
+  <div class="counts">
+    {% for label,key in [('URLs found','unique_urls'),('Allowed','allowed'),('Disallowed','disallowed'),('Crawled','crawled'),('In sitemap','sitemap_urls'),('From page links','html_discovered')] %}
+    <div><b>{{ results.website_recon.counts[key] }}</b><span>{{ label }}</span></div>
+    {% endfor %}
+  </div>
+  <div class="tools">
+    <div><label for="filter">Filter by path or URL</label><input class="field" id="filter" type="search" placeholder="/admin"></div>
+    <span class="shown" id="shown" aria-live="polite"></span>
+  </div>
+  <div class="tw scroll">
+    <table class="rt">
+      <thead><tr><th>Path</th><th>robots.txt</th><th>HTTP</th><th>Access</th></tr></thead>
+      <tbody>
+      {% for x in results.website_recon.url_inventory %}
+      <tr class="urlrow" data-url="{{ x.url|lower }}">
+        <td class="full"><code>{{ x.path }}{% if x.query %}?{{ x.query }}{% endif %}</code><small>{{ x.url }}</small></td>
+        <td data-l="robots.txt">{{ x.robots }}</td>
+        <td data-l="HTTP">{{ x.http_status or 'n/a' }}</td>
+        <td data-l="Access" class="{{ 'yes' if x.accessibility=='publicly_accessible' else '' }}">{{ 'Reachable' if x.accessibility=='publicly_accessible' else 'Not crawled' if x.accessibility=='not_crawled' else 'Error response' }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" style="color:var(--muted)">No URLs were discovered.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{# ---------- technology ---------- #}
+<section class="sec" id="tech">
+  <h2>Technology detected ({{ results.technology.detected|length }})</h2>
+  <p class="lead">Matched from page HTML, asset URLs, response headers, cookies and generator tags. Custom or heavily bundled sites may show few matches.</p>
+  {% if results.technology.detected %}
+  <div class="tw">
+    <table class="rt">
+      <thead><tr><th>Name</th><th>Source</th><th>Confidence</th><th>Evidence</th></tr></thead>
+      <tbody>
+      {% for t in results.technology.detected %}
+      <tr>
+        <td class="full"><b>{{ t.name }}</b></td>
+        <td data-l="Source">{{ t.source }}</td>
+        <td data-l="Confidence" class="{{ 'yes' if t.confidence=='high' else '' }}">{{ t.confidence }}</td>
+        <td class="full mono">{{ t.evidence|join(', ') }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">No technology signature matched.</div>
+  {% endif %}
+</section>
+
+{# ---------- dns ---------- #}
+<section class="sec" id="dns">
+  <h2>DNS and email</h2>
+  <p class="lead">Records published for the domain.</p>
+  <dl class="kv">
+    {% for typ,r in results.dns_email.records|items %}
+    <div style="flex-wrap:wrap"><dt>{{ typ }}</dt><dd class="mono" style="font-weight:400;text-align:left;flex:1 1 60%">{{ r['values']|default([],true)|join(', ') or 'No values' }}</dd></div>
+    {% endfor %}
+  </dl>
+</section>
+
+{# ---------- recommendations ---------- #}
+<section class="sec" id="fixes">
+  <h2>Recommended fixes</h2>
+  <p class="lead">What to change first, in the priority the analyzer assigned.</p>
+  <div class="recs">
+    {% for r in results.recommendations %}
+    <article class="rec">
+      <b>{{ r.title }}</b>
+      <div class="pr">Priority: {{ r.priority }}</div>
+      <p>{{ r.reason }}</p>
+      <p class="act">{{ r.action }}</p>
+    </article>
+    {% else %}
+    <div class="empty" style="grid-column:1/-1">No recommendations.</div>
+    {% endfor %}
+  </div>
+</section>
+
+{% endif %}
+
+<footer>SecureLens uses passive discovery and non-destructive active checks. Use it only on sites you are authorized to assess.</footer>
+</main>
+</div>
+
+<script>
+(function(){
+  var form=document.getElementById('scanForm'),btn=document.getElementById('run');
+  if(form)form.addEventListener('submit',function(){btn.disabled=true;btn.textContent='Scanning, this can take a minute';});
+  var q=document.getElementById('filter'),rows=document.querySelectorAll('.urlrow'),shown=document.getElementById('shown');
+  function count(n){if(shown&&rows.length)shown.textContent='Showing '+n+' of '+rows.length;}
+  count(rows.length);
+  if(q)q.addEventListener('input',function(){
+    var s=q.value.toLowerCase().trim(),n=0;
+    rows.forEach(function(r){var m=!s||r.dataset.url.indexOf(s)>-1;r.style.display=m?'':'none';if(m)n++;});
+    count(n);
+  });
+})();
+</script>
+</body>
+</html>
